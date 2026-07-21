@@ -120,6 +120,7 @@ function App() {
     <${AppLayout}
       currentPage="settings"
       data=${data}
+      setData=${setData}
       toast=${toast}
       setToast=${setToast}
       pageContent=${html`<${SettingsPage} data=${data} setData=${setData} />`}

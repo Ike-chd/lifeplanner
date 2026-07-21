@@ -320,7 +320,7 @@ function App() {
     saveData(data);
   }, [data]);
 
-  return html`<${AppLayout} currentPage="dashboard" data=${data} toast=${toast} setToast=${setToast} pageContent=${html`<${DashboardPage} data=${data} />`} />`;
+  return html`<${AppLayout} currentPage="dashboard" data=${data} setData=${setData} toast=${toast} setToast=${setToast} pageContent=${html`<${DashboardPage} data=${data} />`} />`;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);

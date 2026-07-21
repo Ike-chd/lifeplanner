@@ -46,7 +46,8 @@ function JournalPage(props) {
       time: now.toTimeString().slice(0, 5)
     };
     setData(function(prev) {
-      return Object.assign({}, prev, { journal: [entry].concat(prev.journal || []) });
+      var result = Object.assign({}, prev, { journal: [entry].concat(prev.journal || []) });
+      return awardPoints(result, 5);
     });
     resetForm();
     setShowModal(false);
@@ -228,6 +229,7 @@ function App() {
   return html`<${AppLayout}
     currentPage="journal"
     data=${data}
+    setData=${setData}
     toast=${toast}
     setToast=${setToast}
     pageContent=${html`<${JournalPage} data=${data} setData=${setData} />`}

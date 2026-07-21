@@ -143,6 +143,7 @@ function HabitsPage(props) {
       var habitLogs = Object.assign({}, moodLog.habits || {});
       var log = (habitLogs[t] || []).slice();
       var idx = log.indexOf(id);
+      var isCompleting = idx < 0;
       if (idx >= 0) {
         log.splice(idx, 1);
       } else {
@@ -150,7 +151,8 @@ function HabitsPage(props) {
       }
       habitLogs[t] = log;
       moodLog.habits = habitLogs;
-      return Object.assign({}, prev, { moodLog: moodLog });
+      var result = Object.assign({}, prev, { moodLog: moodLog });
+      return isCompleting ? awardPoints(result, 5) : result;
     });
   }
 
@@ -171,11 +173,13 @@ function HabitsPage(props) {
 
   function toggleTask(id) {
     setData(function(prev) {
-      return Object.assign({}, prev, {
+      var wasCompleted = prev.tasks.some(function(tk) { return tk.id === id && tk.completed; });
+      var result = Object.assign({}, prev, {
         tasks: prev.tasks.map(function(tk) {
           return tk.id === id ? Object.assign({}, tk, { completed: !tk.completed }) : tk;
         })
       });
+      return wasCompleted ? result : awardPoints(result, 10);
     });
   }
 
@@ -609,6 +613,7 @@ function App() {
   return html`<${AppLayout}
     currentPage="habits"
     data=${data}
+    setData=${setData}
     toast=${toast}
     setToast=${setToast}
     pageContent=${html`<${HabitsPage} data=${data} setData=${setData} />`}

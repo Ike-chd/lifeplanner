@@ -38,9 +38,10 @@ function NutritionPage({ data, setData }) {
   function addMeal(type, name, calories, notes) {
     var meal = { id: uid(), date: todayDate, type: type, name: name, calories: calories || '', notes: notes || '', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
     setData(function(prev) {
-      return Object.assign({}, prev, {
+      var result = Object.assign({}, prev, {
         nutrition: Object.assign({}, prev.nutrition, { meals: (prev.nutrition.meals || []).concat([meal]) })
       });
+      return awardPoints(result, 3);
     });
   }
 
@@ -256,7 +257,7 @@ function App() {
   var [data, setData] = React.useState(loadData);
   var [toast, setToast] = React.useState(null);
   React.useEffect(function() { saveData(data); }, [data]);
-  return html`<${AppLayout} currentPage="nutrition" data=${data} toast=${toast} setToast=${setToast} pageContent=${html`<${NutritionPage} data=${data} setData=${setData} />`} />`;
+  return html`<${AppLayout} currentPage="nutrition" data=${data} setData=${setData} toast=${toast} setToast=${setToast} pageContent=${html`<${NutritionPage} data=${data} setData=${setData} />`} />`;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);

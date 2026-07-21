@@ -134,6 +134,30 @@ function Toast(props) {
   `;
 }
 
+/* ───────── Reward Notification Banner ───────── */
+function RewardNotification(props) {
+  var reward = props.reward;
+  var onClaim = props.onClaim;
+  var onDismiss = props.onDismiss;
+  if (!reward) return null;
+  return html`
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] glass rounded-2xl px-5 py-4 animate-in glow border border-amber-500/30 max-w-sm w-full mx-4">
+      <div className="flex items-start gap-3">
+        <span className="text-3xl flex-shrink-0">${reward.icon}</span>
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-amber-400 font-semibold uppercase tracking-wide">Reward Unlocked!</p>
+          <p className="text-sm font-bold text-white mt-0.5">${reward.name}</p>
+          <p className="text-xs text-gray-400 mt-0.5">${reward.desc}</p>
+          <div className="flex gap-2 mt-3">
+            <${Btn} small onClick=${onClaim} color="amber">Claim Now<//>
+            <${Btn} small onClick=${onDismiss} color="ghost">Dismiss<//>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 /* ───────── Sidebar Component ───────── */
 function Sidebar(props) {
   var currentPage = props.currentPage;
@@ -173,6 +197,7 @@ function Sidebar(props) {
 function AppLayout(props) {
   var currentPage = props.currentPage;
   var data = props.data;
+  var setData = props.setData;
   var pageContent = props.pageContent;
   var toast = props.toast;
   var setToast = props.setToast;
@@ -181,12 +206,41 @@ function AppLayout(props) {
   var sidebarOpen = _open[0];
   var setSidebarOpen = _open[1];
 
+  var _notif = React.useState(null);
+  var rewardNotif = _notif[0];
+  var setRewardNotif = _notif[1];
+
+  var _seen = React.useState({});
+  var seenUnlocks = _seen[0];
+  var setSeenUnlocks = _seen[1];
+
+  React.useEffect(function() {
+    if (!data) return;
+    var result = checkAllRewards(data);
+    if (result.newlyUnlocked.length > 0) {
+      setData(result.data);
+      var firstNew = result.newlyUnlocked[0];
+      if (!seenUnlocks[firstNew.id]) {
+        setRewardNotif(firstNew);
+        setSeenUnlocks(Object.assign({}, seenUnlocks, (function(){ var m = {}; result.newlyUnlocked.forEach(function(r){ m[r.id] = true; }); return m; })()));
+      }
+    }
+  }, [data]);
+
+  var FILE_MAP = { trylist: 'try-list', vision: 'vision-board' };
   var navigate = function(pageId) {
-    window.location.href = pageId === 'dashboard' ? 'index.html' : pageId + '.html';
+    var file = FILE_MAP[pageId] || pageId;
+    window.location.href = file === 'dashboard' ? 'index.html' : file + '.html';
   };
+
+  function handleClaimReward() {
+    setRewardNotif(null);
+    navigate('rewards');
+  }
 
   return html`
     <div className="flex h-screen bg-dark-900 text-white overflow-hidden">
+      ${rewardNotif ? html`<${RewardNotification} reward=${rewardNotif} onClaim=${handleClaimReward} onDismiss=${function(){setRewardNotif(null);}} />` : null}
       ${toast ? html`<${Toast} message=${toast} onClose=${function(){setToast(null);}} />` : null}
       <div className="mobile-header glass px-4 py-3 items-center justify-between">
         <button onClick=${function(){setSidebarOpen(!sidebarOpen);}} className="text-gray-300 hover:text-white">${Icons.menu}</button>

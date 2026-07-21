@@ -26,7 +26,7 @@ function MoodPage({ data, setData }) {
       if (!updated.moodLog) updated.moodLog = { habits: {}, mood: {} };
       if (!updated.moodLog.mood) updated.moodLog.mood = {};
       updated.moodLog.mood[today()] = val;
-      return updated;
+      return awardPoints(updated, 2);
     });
   }
 
@@ -119,6 +119,7 @@ function App() {
     <${AppLayout}
       currentPage="mood"
       data=${data}
+      setData=${setData}
       toast=${toast}
       setToast=${setToast}
       pageContent=${html`<${MoodPage} data=${data} setData=${setData} />`}

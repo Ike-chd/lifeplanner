@@ -134,3 +134,17 @@ input[type="range"]::-webkit-slider-thumb {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ─── Reward Animations ─── */
+
+@keyframes rewardPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
+  50%      { box-shadow: 0 0 24px rgba(245, 158, 11, 0.6); }
+}
+
+.reward-pulse { animation: rewardPulse 1.5s ease-in-out infinite; }
+
+.reward-unlocked {
+  animation: rewardPulse 2s ease-in-out infinite;
+  border-color: rgba(245, 158, 11, 0.4);
+}

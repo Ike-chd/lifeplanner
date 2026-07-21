@@ -89,7 +89,7 @@ function VacationsPage({ data, setData }) {
     var amount = parseFloat(depositAmount) || 0;
     if (amount <= 0) return;
     setData(function(prev) {
-      return Object.assign({}, prev, {
+      var result = Object.assign({}, prev, {
         vacations: (prev.vacations || []).map(function(v) {
           if (v.id === depositVacationId) {
             return Object.assign({}, v, { saved: Math.min(v.saved + amount, v.totalCost) });
@@ -97,6 +97,7 @@ function VacationsPage({ data, setData }) {
           return v;
         })
       });
+      return awardPoints(result, 5);
     });
     setShowDepositModal(false);
     setDepositAmount('');
@@ -424,7 +425,7 @@ function App() {
   var [data, setData] = React.useState(loadData);
   var [toast, setToast] = React.useState(null);
   React.useEffect(function() { saveData(data); }, [data]);
-  return html`<${AppLayout} currentPage="vacations" data=${data} toast=${toast} setToast=${setToast} pageContent=${html`<${VacationsPage} data=${data} setData=${setData} />`} />`;
+  return html`<${AppLayout} currentPage="vacations" data=${data} setData=${setData} toast=${toast} setToast=${setToast} pageContent=${html`<${VacationsPage} data=${data} setData=${setData} />`} />`;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);

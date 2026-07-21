@@ -1,8 +1,13 @@
 function BudgetPage({ data, setData }) {
   var [showFixedModal, setShowFixedModal] = React.useState(false);
   var [showExtraModal, setShowExtraModal] = React.useState(false);
+  var [showDepositModal, setShowDepositModal] = React.useState(false);
+  var [showWithdrawModal, setShowWithdrawModal] = React.useState(false);
   var [fixedForm, setFixedForm] = React.useState({ name: '', amount: '' });
   var [extraForm, setExtraForm] = React.useState({ name: '', amount: '', date: today() });
+  var [depositAmount, setDepositAmount] = React.useState('');
+  var [withdrawAmount, setWithdrawAmount] = React.useState('');
+  var [withdrawReason, setWithdrawReason] = React.useState('');
   var [editingSalary, setEditingSalary] = React.useState(false);
   var [tempSalary, setTempSalary] = React.useState('');
   var [editingGoal, setEditingGoal] = React.useState(false);
@@ -14,6 +19,7 @@ function BudgetPage({ data, setData }) {
   var fixedExpenses = budget.fixedExpenses || [];
   var extraExpenses = budget.extraExpenses || [];
   var savingsGoal = budget.savingsGoal || 0;
+  var savings = budget.savings || { balance: 0, log: [] };
 
   var t = today();
   var currentMonth = t.slice(0, 7);
@@ -94,6 +100,36 @@ function BudgetPage({ data, setData }) {
   function goalProgressPct() {
     if (savingsGoal <= 0) return 0;
     return Math.min(100, Math.round((Math.max(0, remaining) / savingsGoal) * 100));
+  }
+
+  function handleSavingsDeposit() {
+    var amount = parseFloat(depositAmount) || 0;
+    if (amount <= 0) return;
+    var entry = { id: uid(), type: 'deposit', amount: amount, reason: '', date: today(), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
+    updateBudget({
+      savings: {
+        balance: (savings.balance || 0) + amount,
+        log: [entry].concat(savings.log || [])
+      }
+    });
+    setDepositAmount('');
+    setShowDepositModal(false);
+  }
+
+  function handleSavingsWithdraw() {
+    var amount = parseFloat(withdrawAmount) || 0;
+    if (amount <= 0 || !withdrawReason.trim()) return;
+    if (amount > (savings.balance || 0)) return;
+    var entry = { id: uid(), type: 'withdraw', amount: amount, reason: withdrawReason.trim(), date: today(), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
+    updateBudget({
+      savings: {
+        balance: (savings.balance || 0) - amount,
+        log: [entry].concat(savings.log || [])
+      }
+    });
+    setWithdrawAmount('');
+    setWithdrawReason('');
+    setShowWithdrawModal(false);
   }
 
   var overviewItems = [
@@ -327,6 +363,53 @@ function BudgetPage({ data, setData }) {
         `}
       </div>
 
+      <div className="glass rounded-2xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider">Savings Account</h2>
+          <div className="flex gap-2">
+            <${Btn} onClick=${function() { setDepositAmount(''); setShowDepositModal(true); }} color="emerald" small>
+              ${Icons.plus} Deposit
+            <//>
+            <${Btn} onClick=${function() { setWithdrawAmount(''); setWithdrawReason(''); setShowWithdrawModal(true); }} color="amber" small>
+              Withdraw
+            <//>
+          </div>
+        </div>
+        <div className="bg-dark-700/50 rounded-xl p-4 mb-4">
+          <p className="text-xs text-gray-400 mb-1">Available Balance</p>
+          <p className="text-3xl font-bold text-emerald-400">${fmtMoney(savings.balance || 0)}</p>
+        </div>
+        ${(savings.log || []).length > 0 ? html`
+          <div>
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Transaction History</h3>
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              ${(savings.log || []).map(function(entry) {
+                var isDeposit = entry.type === 'deposit';
+                return html`
+                  <div key=${entry.id} className="flex items-center justify-between p-3 rounded-xl bg-dark-700/30">
+                    <div className="flex items-center gap-3">
+                      <div className=${"w-8 h-8 rounded-full flex items-center justify-center text-sm " + (isDeposit ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400')}>
+                        ${isDeposit ? '↓' : '↑'}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-white">${isDeposit ? 'Deposit' : 'Withdrawal'}</p>
+                        ${!isDeposit && entry.reason ? html`<p className="text-[10px] text-gray-400 mt-0.5">${entry.reason}</p>` : null}
+                        <p className="text-[10px] text-gray-500 mt-0.5">${fmt(entry.date)}${entry.time ? ' · ' + entry.time : ''}</p>
+                      </div>
+                    </div>
+                    <span className=${"text-sm font-bold " + (isDeposit ? 'text-emerald-400' : 'text-amber-400')}>
+                      ${isDeposit ? '+' : '-'}${fmtMoney(entry.amount)}
+                    </span>
+                  </div>
+                `;
+              })}
+            </div>
+          </div>
+        ` : html`
+          <p className="text-xs text-gray-500 text-center py-3">No transactions yet. Make a deposit to get started!</p>
+        `}
+      </div>
+
       <${Modal}
         open=${showFixedModal}
         onClose=${function() { setShowFixedModal(false); }}
@@ -384,6 +467,60 @@ function BudgetPage({ data, setData }) {
           </div>
         </div>
       <//>
+
+      <${Modal}
+        open=${showDepositModal}
+        onClose=${function() { setShowDepositModal(false); }}
+        title="Deposit to Savings"
+      >
+        <div className="space-y-1">
+          <div className="bg-dark-700/50 rounded-xl p-3 mb-3">
+            <p className="text-xs text-gray-400">Current Balance</p>
+            <p className="text-lg font-bold text-emerald-400">${fmtMoney(savings.balance || 0)}</p>
+          </div>
+          <${Input}
+            label="Amount to Deposit"
+            type="number"
+            value=${depositAmount}
+            onChange=${function(v) { setDepositAmount(v); }}
+            placeholder="e.g. 500"
+          />
+          <div className="flex gap-2 pt-2">
+            <${Btn} onClick=${function() { setShowDepositModal(false); }} color="ghost" className="flex-1">Cancel<//>
+            <${Btn} onClick=${handleSavingsDeposit} color="emerald" className="flex-1">Deposit<//>
+          </div>
+        </div>
+      <//>
+
+      <${Modal}
+        open=${showWithdrawModal}
+        onClose=${function() { setShowWithdrawModal(false); }}
+        title="Withdraw from Savings"
+      >
+        <div className="space-y-1">
+          <div className="bg-dark-700/50 rounded-xl p-3 mb-3">
+            <p className="text-xs text-gray-400">Available Balance</p>
+            <p className="text-lg font-bold text-emerald-400">${fmtMoney(savings.balance || 0)}</p>
+          </div>
+          <${Input}
+            label="Amount to Withdraw"
+            type="number"
+            value=${withdrawAmount}
+            onChange=${function(v) { setWithdrawAmount(v); }}
+            placeholder="e.g. 200"
+          />
+          <${Input}
+            label="Reason for Withdrawal"
+            value=${withdrawReason}
+            onChange=${function(v) { setWithdrawReason(v); }}
+            placeholder="e.g. Emergency car repair"
+          />
+          <div className="flex gap-2 pt-2">
+            <${Btn} onClick=${function() { setShowWithdrawModal(false); }} color="ghost" className="flex-1">Cancel<//>
+            <${Btn} onClick=${handleSavingsWithdraw} color="amber" className="flex-1">Withdraw<//>
+          </div>
+        </div>
+      <//>
     </div>
   `;
 }
@@ -392,6 +529,6 @@ function App() {
   var [data, setData] = React.useState(loadData);
   var [toast, setToast] = React.useState(null);
   React.useEffect(function() { saveData(data); }, [data]);
-  return html`<${AppLayout} currentPage="budget" data=${data} toast=${toast} setToast=${setToast} pageContent=${html`<${BudgetPage} data=${data} setData=${setData} />`} />`;
+  return html`<${AppLayout} currentPage="budget" data=${data} setData=${setData} toast=${toast} setToast=${setToast} pageContent=${html`<${BudgetPage} data=${data} setData=${setData} />`} />`;
 }
 ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);

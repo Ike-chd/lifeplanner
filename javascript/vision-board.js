@@ -143,7 +143,7 @@ function App() {
   var [data, setData] = React.useState(loadData);
   var [toast, setToast] = React.useState(null);
   React.useEffect(function() { saveData(data); }, [data]);
-  return html`<${AppLayout} currentPage="vision" data=${data} toast=${toast} setToast=${setToast} pageContent=${html`<${VisionBoardPage} data=${data} setData=${setData} />`} />`;
+  return html`<${AppLayout} currentPage="vision" data=${data} setData=${setData} toast=${toast} setToast=${setToast} pageContent=${html`<${VisionBoardPage} data=${data} setData=${setData} />`} />`;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);

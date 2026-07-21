@@ -45,12 +45,12 @@ function defaultData() {
     habits: [],
     tasks: [],
     nutrition: { meals: [], waterTarget: 8, waterLog: {} },
-    budget: { salary: 0, fixedExpenses: [], extraExpenses: [], savingsGoal: 0 },
+    budget: { salary: 0, fixedExpenses: [], extraExpenses: [], savingsGoal: 0, savings: { balance: 0, log: [] } },
     goals: [],
     vacations: [],
     sideQuests: [],
     tryList: [],
-    rewards: { points: 0, earned: [] },
+    rewards: { points: 0, earned: [], unlocked: [] },
     journal: [],
     readings: [],
     moodLog: {},
@@ -515,6 +515,47 @@ function checkReward(rewardId, data) {
     case 'exporter': return false;
     default: return false;
   }
+}
+
+/* ─── Award Points ─── */
+function awardPoints(data, amount) {
+  if (!amount || amount <= 0) return data;
+  var rewards = data.rewards || { points: 0, earned: [], unlocked: [] };
+  return Object.assign({}, data, {
+    rewards: Object.assign({}, rewards, {
+      points: (rewards.points || 0) + amount
+    })
+  });
+}
+
+/* ─── Check All Rewards & Return Newly Unlocked ─── */
+function checkAllRewards(data) {
+  var rewards = data.rewards || { points: 0, earned: [], unlocked: [] };
+  var earned = rewards.earned || [];
+  var unlocked = rewards.unlocked || [];
+  var newlyUnlocked = [];
+
+  REWARDS.forEach(function(r) {
+    if (earned.indexOf(r.id) >= 0) return;
+    if (unlocked.indexOf(r.id) >= 0) return;
+    try {
+      if (checkReward(r.id, data)) {
+        newlyUnlocked.push(r);
+      }
+    } catch (e) {}
+  });
+
+  if (newlyUnlocked.length > 0) {
+    var updatedUnlocked = unlocked.concat(newlyUnlocked.map(function(r) { return r.id; }));
+    return {
+      data: Object.assign({}, data, {
+        rewards: Object.assign({}, rewards, { unlocked: updatedUnlocked })
+      }),
+      newlyUnlocked: newlyUnlocked
+    };
+  }
+
+  return { data: data, newlyUnlocked: [] };
 }
 
 /* ─── Sidebar Navigation Items ─── */

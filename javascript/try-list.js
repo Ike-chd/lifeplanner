@@ -56,7 +56,7 @@ function TryListPage({ data, setData }) {
 
   function markTried(id) {
     setData(function(prev) {
-      return Object.assign({}, prev, {
+      var result = Object.assign({}, prev, {
         tryList: (prev.tryList || []).map(function(item) {
           if (item.id === id) {
             return Object.assign({}, item, { tried: true, triedAt: today() });
@@ -64,6 +64,7 @@ function TryListPage({ data, setData }) {
           return item;
         })
       });
+      return awardPoints(result, 8);
     });
   }
 
@@ -253,7 +254,7 @@ function App() {
   var toast = _b[0];
   var setToast = _b[1];
   React.useEffect(function() { saveData(data); }, [data]);
-  return html`<${AppLayout} currentPage="trylist" data=${data} toast=${toast} setToast=${setToast} pageContent=${html`<${TryListPage} data=${data} setData=${setData} />`} />`;
+  return html`<${AppLayout} currentPage="trylist" data=${data} setData=${setData} toast=${toast} setToast=${setToast} pageContent=${html`<${TryListPage} data=${data} setData=${setData} />`} />`;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);

@@ -138,7 +138,7 @@ function GoalsPage({ data, setData }) {
           })
         });
       } else {
-        return Object.assign({}, prev, {
+        var result = Object.assign({}, prev, {
           goals: goals.concat([{
             id: uid(),
             name: form.name.trim(),
@@ -152,6 +152,7 @@ function GoalsPage({ data, setData }) {
             steps: steps
           }])
         });
+        return awardPoints(result, 5);
       }
     });
     setShowModal(false);
@@ -176,7 +177,7 @@ function GoalsPage({ data, setData }) {
     if (amount <= 0 || !depositGoal) return;
 
     setData(function(prev) {
-      return Object.assign({}, prev, {
+      var result = Object.assign({}, prev, {
         goals: prev.goals.map(function(g) {
           if (g.id !== depositGoal.id) return g;
           var newSaved = Math.min(g.target, (g.saved || 0) + amount);
@@ -186,6 +187,7 @@ function GoalsPage({ data, setData }) {
           });
         })
       });
+      return awardPoints(result, 5);
     });
     setDepositGoal(null);
     setDepositAmount('');
@@ -193,7 +195,10 @@ function GoalsPage({ data, setData }) {
 
   function toggleStepCompletedOnCard(goalId, stepId) {
     setData(function(prev) {
-      return Object.assign({}, prev, {
+      var wasCompleted = (prev.goals || []).some(function(g) {
+        return g.id === goalId && (g.steps || []).some(function(s) { return s.id === stepId && s.completed; });
+      });
+      var result = Object.assign({}, prev, {
         goals: (prev.goals || []).map(function(g) {
           if (g.id !== goalId) return g;
           var newSteps = (g.steps || []).map(function(s) {
@@ -203,6 +208,7 @@ function GoalsPage({ data, setData }) {
           return Object.assign({}, g, { steps: newSteps });
         })
       });
+      return wasCompleted ? result : awardPoints(result, 5);
     });
   }
 
@@ -655,7 +661,7 @@ function App() {
     saveData(data);
   }, [data]);
 
-  return html`<${AppLayout} currentPage="goals" data=${data} toast=${toast} setToast=${setToast}
+  return html`<${AppLayout} currentPage="goals" data=${data} setData=${setData} toast=${toast} setToast=${setToast}
     pageContent=${html`<${GoalsPage} data=${data} setData=${setData} />`} />`;
 }
 

@@ -607,6 +607,7 @@ function App() {
   return html`<${AppLayout}
     currentPage="calendar"
     data=${data}
+    setData=${setData}
     toast=${toast}
     setToast=${setToast}
     pageContent=${html`<${CalendarPage} data=${data} />`}

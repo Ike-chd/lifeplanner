@@ -29,7 +29,8 @@ function ReadingPage({ data, setData }) {
       startedAt: today()
     };
     setData(function(prev) {
-      return Object.assign({}, prev, { readings: (prev.readings || []).concat(item) });
+      var result = Object.assign({}, prev, { readings: (prev.readings || []).concat(item) });
+      return awardPoints(result, 3);
     });
     setNewItem({ title: '', author: '', type: 'book' });
     setShowModal(false);
@@ -140,7 +141,7 @@ function App() {
   var [data, setData] = React.useState(loadData);
   var [toast, setToast] = React.useState(null);
   React.useEffect(function() { saveData(data); }, [data]);
-  return html`<${AppLayout} currentPage="reading" data=${data} toast=${toast} setToast=${setToast} pageContent=${html`<${ReadingPage} data=${data} setData=${setData} />`} />`;
+  return html`<${AppLayout} currentPage="reading" data=${data} setData=${setData} toast=${toast} setToast=${setToast} pageContent=${html`<${ReadingPage} data=${data} setData=${setData} />`} />`;
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
