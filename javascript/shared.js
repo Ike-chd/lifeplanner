@@ -37,7 +37,7 @@ var Icons = {
 
 /* ───────── Modal ───────── */
 function Modal(props) {
-  if (!props.open) return null;
+  if (props.open === false) return null;
   return html`
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick=${props.onClose}>
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
@@ -96,7 +96,7 @@ function Btn(props) {
   };
   var sizeClass = props.small ? 'px-3 py-1.5 text-xs' : 'px-4 py-2 text-sm';
   return html`
-    <button onClick=${props.onClick} className=${"rounded-lg font-medium transition active:scale-95 inline-flex items-center gap-1.5 " + sizeClass + " " + (colors[color] || colors.accent) + " " + (props.className || '')}>
+    <button type=${props.type || 'button'} onClick=${props.onClick} className=${"rounded-lg font-medium transition active:scale-95 inline-flex items-center gap-1.5 " + sizeClass + " " + (colors[color] || colors.accent) + " " + (props.className || '')}>
       ${props.children}
     </button>
   `;

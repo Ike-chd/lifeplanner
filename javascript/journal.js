@@ -69,9 +69,9 @@ function JournalPage(props) {
 
   function renderEntry(entry) {
     var tagBadges = (entry.tags || []).map(function(tag) {
-      return React.createElement('span', {
-        key: tag,
-        style: {
+      return html`<span
+        key=${tag}
+        style=${{
           display: 'inline-block',
           padding: '2px 8px',
           borderRadius: '12px',
@@ -79,13 +79,13 @@ function JournalPage(props) {
           fontSize: '0.7rem',
           color: 'rgba(255,255,255,0.7)',
           border: '1px solid rgba(255,255,255,0.1)'
-        }
-      }, tag);
+        }}
+      >${tag}</span>`;
     });
 
-    return React.createElement('div', {
-      key: entry.id,
-      style: {
+    return html`<div
+      key=${entry.id}
+      style=${{
         background: 'rgba(255,255,255,0.06)',
         backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255,255,255,0.1)',
@@ -93,31 +93,20 @@ function JournalPage(props) {
         padding: '20px',
         marginBottom: '12px',
         position: 'relative'
-      }
-    },
-      React.createElement('div', {
-        style: {
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          marginBottom: '8px'
-        }
-      },
-        React.createElement('div', { style: { flex: 1 } },
-          entry.title ? React.createElement('h3', {
-            style: { margin: '0 0 4px 0', color: '#fff', fontSize: '1.05rem', fontWeight: 600 }
-          }, entry.title) : null,
-          React.createElement('div', {
-            style: { display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }
-          },
-            React.createElement('span', null, entry.date),
-            React.createElement('span', null, entry.time),
-            React.createElement('span', { style: { fontSize: '1.1rem' } }, getMoodEmoji(entry.mood))
-          )
-        ),
-        React.createElement('button', {
-          onClick: function() { handleDelete(entry.id); },
-          style: {
+      }}
+    >
+      <div style=${{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+        <div style=${{ flex: 1 }}>
+          ${entry.title ? html`<h3 style=${{ margin: '0 0 4px 0', color: '#fff', fontSize: '1.05rem', fontWeight: 600 }}>${entry.title}</h3>` : null}
+          <div style=${{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)' }}>
+            <span>${entry.date}</span>
+            <span>${entry.time}</span>
+            <span style=${{ fontSize: '1.1rem' }}>${getMoodEmoji(entry.mood)}</span>
+          </div>
+        </div>
+        <button
+          onClick=${function() { handleDelete(entry.id); }}
+          style=${{
             background: 'none',
             border: 'none',
             color: 'rgba(255,255,255,0.3)',
@@ -125,33 +114,29 @@ function JournalPage(props) {
             padding: '4px',
             fontSize: '1rem',
             lineHeight: 1
-          },
-          onMouseEnter: function(e) { e.target.style.color = '#ff6b6b'; },
-          onMouseLeave: function(e) { e.target.style.color = 'rgba(255,255,255,0.3)'; }
-        }, Icons.trash || '×')
-      ),
-      React.createElement('p', {
-        style: {
-          margin: '8px 0',
-          color: 'rgba(255,255,255,0.85)',
-          fontSize: '0.9rem',
-          lineHeight: 1.6,
-          whiteSpace: 'pre-wrap',
-          wordBreak: 'break-word'
-        }
-      }, entry.content),
-      tagBadges.length > 0 ? React.createElement('div', {
-        style: { display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }
-      }, tagBadges) : null
-    );
+          }}
+          onMouseEnter=${function(e) { e.target.style.color = '#ff6b6b'; }}
+          onMouseLeave=${function(e) { e.target.style.color = 'rgba(255,255,255,0.3)'; }}
+        >${Icons.trash || '×'}</button>
+      </div>
+      <p style=${{
+        margin: '8px 0',
+        color: 'rgba(255,255,255,0.85)',
+        fontSize: '0.9rem',
+        lineHeight: 1.6,
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word'
+      }}>${entry.content}</p>
+      ${tagBadges.length > 0 ? html`<div style=${{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>${tagBadges}</div>` : null}
+    </div>`;
   }
 
   var moodButtons = MOODS.map(function(m) {
     var selected = moodVal === m.key;
-    return React.createElement('button', {
-      key: m.key,
-      onClick: function() { setMoodVal(m.key); },
-      style: {
+    return html`<button
+      key=${m.key}
+      onClick=${function() { setMoodVal(m.key); }}
+      style=${{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -163,97 +148,73 @@ function JournalPage(props) {
         cursor: 'pointer',
         transition: 'all 0.2s',
         minWidth: '60px'
-      }
-    },
-      React.createElement('span', { style: { fontSize: '1.5rem' } }, m.emoji),
-      React.createElement('span', {
-        style: { fontSize: '0.65rem', color: selected ? '#b8a4ff' : 'rgba(255,255,255,0.5)' }
-      }, m.label)
-    );
+      }}
+    >
+      <span style=${{ fontSize: '1.5rem' }}>${m.emoji}</span>
+      <span style=${{ fontSize: '0.65rem', color: selected ? '#b8a4ff' : 'rgba(255,255,255,0.5)' }}>${m.label}</span>
+    </button>`;
   });
 
-  return React.createElement('div', null,
-    React.createElement('div', {
-      style: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '24px'
-      }
-    },
-      React.createElement('div', {
-        style: { display: 'flex', alignItems: 'center', gap: '12px' }
-      },
-        React.createElement('span', { style: { fontSize: '1.5rem' } }, Icons.journal || '📖'),
-        React.createElement('h1', {
-          style: { margin: 0, color: '#fff', fontSize: '1.5rem', fontWeight: 700 }
-        }, 'Journal')
-      ),
-      React.createElement(Btn, {
-        onClick: function() { resetForm(); setShowModal(true); },
-        variant: 'primary'
-      }, '+ New Entry')
-    ),
-    sorted.length === 0
-      ? React.createElement('div', {
-          style: {
-            textAlign: 'center',
-            padding: '60px 20px',
-            color: 'rgba(255,255,255,0.4)'
-          }
-        },
-          React.createElement('div', { style: { fontSize: '3rem', marginBottom: '16px' } }, '📖'),
-          React.createElement('p', { style: { fontSize: '1rem', margin: '0 0 4px' } }, 'No journal entries yet'),
-          React.createElement('p', { style: { fontSize: '0.85rem', margin: 0 } }, 'Start writing to capture your thoughts and reflections.')
-        )
-      : React.createElement('div', null, sorted.map(renderEntry)),
-    showModal ? React.createElement(Modal, {
-      onClose: function() { setShowModal(false); },
-      title: 'New Journal Entry'
-    },
-      React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '16px' } },
-        React.createElement(Input, {
-          label: 'Title (optional)',
-          value: titleVal,
-          onChange: function(e) { setTitleVal(e.target ? e.target.value : e); },
-          placeholder: 'Entry title...'
-        }),
-        React.createElement('div', null,
-          React.createElement('label', {
-            style: { display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }
-          }, 'Mood'),
-          React.createElement('div', {
-            style: { display: 'flex', gap: '8px', justifyContent: 'space-between' }
-          }, moodButtons)
-        ),
-        React.createElement(Textarea, {
-          label: 'Content',
-          value: contentVal,
-          onChange: function(e) { setContentVal(e.target ? e.target.value : e); },
-          rows: 6,
-          placeholder: 'Write your thoughts...'
-        }),
-        React.createElement(Input, {
-          label: 'Tags (comma separated)',
-          value: tagsVal,
-          onChange: function(e) { setTagsVal(e.target ? e.target.value : e); },
-          placeholder: 'reflection, goals, gratitude...'
-        }),
-        React.createElement('div', {
-          style: { display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '8px' }
-        },
-          React.createElement(Btn, {
-            onClick: function() { setShowModal(false); },
-            variant: 'secondary'
-          }, 'Cancel'),
-          React.createElement(Btn, {
-            onClick: handleSave,
-            variant: 'primary'
-          }, 'Save Entry')
-        )
-      )
-    ) : null
-  );
+  return html`<div>
+    <div style=${{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <div style=${{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <span style=${{ fontSize: '1.5rem' }}>${Icons.journal || '📖'}</span>
+        <h1 style=${{ margin: 0, color: '#fff', fontSize: '1.5rem', fontWeight: 700 }}>Journal</h1>
+      </div>
+      <${Btn}
+        onClick=${function() { resetForm(); setShowModal(true); }}
+        color="accent"
+      >+ New Entry<//>
+    </div>
+    ${sorted.length === 0
+      ? html`<div style=${{ textAlign: 'center', padding: '60px 20px', color: 'rgba(255,255,255,0.4)' }}>
+          <div style=${{ fontSize: '3rem', marginBottom: '16px' }}>📖</div>
+          <p style=${{ fontSize: '1rem', margin: '0 0 4px' }}>No journal entries yet</p>
+          <p style=${{ fontSize: '0.85rem', margin: 0 }}>Start writing to capture your thoughts and reflections.</p>
+        </div>`
+      : html`<div>${sorted.map(renderEntry)}</div>`
+    }
+    ${showModal ? html`<${Modal}
+      onClose=${function() { setShowModal(false); }}
+      title="New Journal Entry"
+    >
+      <div style=${{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <${Input}
+          label="Title (optional)"
+          value=${titleVal}
+          onChange=${function(e) { setTitleVal(e.target ? e.target.value : e); }}
+          placeholder="Entry title..."
+        />
+        <div>
+          <label style=${{ display: 'block', marginBottom: '6px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>Mood</label>
+          <div style=${{ display: 'flex', gap: '8px', justifyContent: 'space-between' }}>${moodButtons}</div>
+        </div>
+        <${Textarea}
+          label="Content"
+          value=${contentVal}
+          onChange=${function(e) { setContentVal(e.target ? e.target.value : e); }}
+          rows="6"
+          placeholder="Write your thoughts..."
+        />
+        <${Input}
+          label="Tags (comma separated)"
+          value=${tagsVal}
+          onChange=${function(e) { setTagsVal(e.target ? e.target.value : e); }}
+          placeholder="reflection, goals, gratitude..."
+        />
+        <div style=${{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '8px' }}>
+          <${Btn}
+            onClick=${function() { setShowModal(false); }}
+            color="ghost"
+          >Cancel<//>
+          <${Btn}
+            onClick=${handleSave}
+            color="accent"
+          >Save Entry<//>
+        </div>
+      </div>
+    <//>` : null}
+  </div>`;
 }
 
 function App() {
@@ -264,13 +225,13 @@ function App() {
   var toast = _b[0];
   var setToast = _b[1];
   React.useEffect(function() { saveData(data); }, [data]);
-  return React.createElement(AppLayout, {
-    currentPage: 'journal',
-    data: data,
-    toast: toast,
-    setToast: setToast,
-    pageContent: React.createElement(JournalPage, { data: data, setData: setData })
-  });
+  return html`<${AppLayout}
+    currentPage="journal"
+    data=${data}
+    toast=${toast}
+    setToast=${setToast}
+    pageContent=${html`<${JournalPage} data=${data} setData=${setData} />`}
+  />`;
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);

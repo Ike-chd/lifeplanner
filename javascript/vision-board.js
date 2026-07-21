@@ -54,102 +54,96 @@ function VisionBoardPage({ data, setData }) {
     return found ? found.label : cat;
   }
 
-  return React.createElement('div', { className: "space-y-5 animate-in pb-6" },
-    React.createElement('div', { className: "flex items-center justify-between" },
-      React.createElement('div', null,
-        React.createElement('h1', { className: "text-2xl font-bold text-white flex items-center gap-2" },
-          Icons.vision,
-          'Vision Board'
-        ),
-        React.createElement('p', { className: "text-sm text-gray-400 mt-1" }, 'Visualize your dream life')
-      ),
-      React.createElement(Btn, { onClick: openAdd, color: 'accent' },
-        Icons.plus,
-        ' Add Vision'
-      )
-    ),
+  return html`<div className="space-y-5 animate-in pb-6">
+    <div className="flex items-center justify-between">
+      <div>
+        <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          ${Icons.vision}
+          Vision Board
+        </h1>
+        <p className="text-sm text-gray-400 mt-1">Visualize your dream life</p>
+      </div>
+      <${Btn} onClick=${openAdd} color="accent">
+        ${Icons.plus}
+        Add Vision
+      <//>
+    </div>
 
-    visions.length === 0
-      ? React.createElement('div', { className: "glass rounded-2xl p-12 text-center" },
-          React.createElement('div', { className: "text-4xl mb-3" }, '✨'),
-          React.createElement('h3', { className: "text-base font-bold text-white mb-1" }, 'No visions yet'),
-          React.createElement('p', { className: "text-sm text-gray-400" }, 'Start adding your dreams and aspirations!')
-        )
-      : React.createElement('div', { className: "columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4" },
-          visions.map(function(v) {
-            return React.createElement('div', {
-              key: v.id,
-              className: "break-inside-avoid relative group rounded-xl overflow-hidden",
-              style: {
-                background: v.color + '15',
-                borderLeft: '4px solid ' + v.color
-              }
-            },
-              React.createElement('div', { className: "p-4" },
-                React.createElement('div', { className: "flex items-start justify-between mb-2" },
-                  React.createElement('span', {
-                    className: "text-[10px] font-semibold px-2 py-0.5 rounded-full",
-                    style: { background: v.color + '25', color: v.color }
-                  }, getCategoryLabel(v.category)),
-                  React.createElement('button', {
-                    onClick: function() { handleDelete(v.id); },
-                    className: "opacity-0 group-hover:opacity-100 transition p-1 rounded-lg hover:bg-dark-700/50 text-gray-400 hover:text-rose-400"
-                  }, Icons.trash)
-                ),
-                React.createElement('p', { className: "text-sm font-medium text-white mt-2 leading-relaxed" }, v.text)
-              )
-            );
-          })
-        ),
+    ${visions.length === 0
+      ? html`<div className="glass rounded-2xl p-12 text-center">
+          <div className="text-4xl mb-3">✨</div>
+          <h3 className="text-base font-bold text-white mb-1">No visions yet</h3>
+          <p className="text-sm text-gray-400">Start adding your dreams and aspirations!</p>
+        </div>`
+      : html`<div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+          ${visions.map(function(v) {
+            return html`<div
+              key=${v.id}
+              className="break-inside-avoid relative group rounded-xl overflow-hidden"
+              style=${{ background: v.color + '15', borderLeft: '4px solid ' + v.color }}
+            >
+              <div className="p-4">
+                <div className="flex items-start justify-between mb-2">
+                  <span
+                    className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                    style=${{ background: v.color + '25', color: v.color }}
+                  >${getCategoryLabel(v.category)}</span>
+                  <button
+                    onClick=${function() { handleDelete(v.id); }}
+                    className="opacity-0 group-hover:opacity-100 transition p-1 rounded-lg hover:bg-dark-700/50 text-gray-400 hover:text-rose-400"
+                  >${Icons.trash}</button>
+                </div>
+                <p className="text-sm font-medium text-white mt-2 leading-relaxed">${v.text}</p>
+              </div>
+            </div>`;
+          })}
+        </div>`}
 
-    showModal ? React.createElement(Modal, {
-      open: showModal,
-      onClose: function() { setShowModal(false); },
-      title: 'Add Vision'
-    },
-      React.createElement('div', null,
-        React.createElement(Input, {
-          label: 'Your Vision',
-          value: formText,
-          onChange: setFormText,
-          placeholder: 'e.g. Travel the world'
-        }),
-        React.createElement(Select, {
-          label: 'Category',
-          value: formCategory,
-          onChange: setFormCategory,
-          options: VISION_CATEGORIES.map(function(c) { return { value: c.value, label: c.label }; })
-        }),
-        React.createElement('label', { className: "block mb-3" },
-          React.createElement('span', { className: "text-xs font-medium text-gray-400 mb-1 block" }, 'Color'),
-          React.createElement('div', { className: "flex gap-2 flex-wrap" },
-            VISION_COLORS.map(function(color) {
-              return React.createElement('button', {
-                key: color,
-                onClick: function() { setFormColor(color); },
-                className: "w-8 h-8 rounded-full transition " + (formColor === color ? 'ring-2 ring-white ring-offset-2 ring-offset-dark-800' : 'hover:scale-110'),
-                style: { background: color }
-              });
-            })
-          )
-        ),
-        React.createElement('div', { className: "flex gap-2 pt-2" },
-          React.createElement(Btn, { onClick: function() { setShowModal(false); }, color: 'ghost', className: 'flex-1' }, 'Cancel'),
-          React.createElement(Btn, { onClick: handleSave, color: 'accent', className: 'flex-1' }, 'Add Vision')
-        )
-      )
-    ) : null
-  );
+    ${showModal ? html`<${Modal}
+      open=${showModal}
+      onClose=${function() { setShowModal(false); }}
+      title="Add Vision"
+    >
+      <div>
+        <${Input}
+          label="Your Vision"
+          value=${formText}
+          onChange=${setFormText}
+          placeholder="e.g. Travel the world"
+        />
+        <${Select}
+          label="Category"
+          value=${formCategory}
+          onChange=${setFormCategory}
+          options=${VISION_CATEGORIES.map(function(c) { return { value: c.value, label: c.label }; })}
+        />
+        <label className="block mb-3">
+          <span className="text-xs font-medium text-gray-400 mb-1 block">Color</span>
+          <div className="flex gap-2 flex-wrap">
+            ${VISION_COLORS.map(function(color) {
+              return html`<button
+                key=${color}
+                onClick=${function() { setFormColor(color); }}
+                className=${"w-8 h-8 rounded-full transition " + (formColor === color ? 'ring-2 ring-white ring-offset-2 ring-offset-dark-800' : 'hover:scale-110')}
+                style=${{ background: color }}
+              />`;
+            })}
+          </div>
+        </label>
+        <div className="flex gap-2 pt-2">
+          <${Btn} onClick=${function() { setShowModal(false); }} color="ghost" className="flex-1">Cancel<//>
+          <${Btn} onClick=${handleSave} color="accent" className="flex-1">Add Vision<//>
+        </div>
+      </div>
+    <//>` : null}
+  </div>`;
 }
 
 function App() {
   var [data, setData] = React.useState(loadData);
   var [toast, setToast] = React.useState(null);
   React.useEffect(function() { saveData(data); }, [data]);
-  return React.createElement(AppLayout, {
-    currentPage: 'vision', data: data, toast: toast, setToast: setToast,
-    pageContent: React.createElement(VisionBoardPage, { data: data, setData: setData })
-  });
+  return html`<${AppLayout} currentPage="vision" data=${data} toast=${toast} setToast=${setToast} pageContent=${html`<${VisionBoardPage} data=${data} setData=${setData} />`} />`;
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);

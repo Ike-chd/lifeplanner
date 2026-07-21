@@ -92,160 +92,123 @@ function TryListPage({ data, setData }) {
   var totalCost = tryList.reduce(function(sum, item) { return sum + (item.cost || 0); }, 0);
   var triedCost = completed.reduce(function(sum, item) { return sum + (item.cost || 0); }, 0);
 
-  return React.createElement('div', null,
-    React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' } },
-      React.createElement('div', null,
-        React.createElement('h1', { style: { margin: 0, fontSize: '28px', fontWeight: 700, color: '#e2e8f0' } }, '✨ Try List'),
-        React.createElement('p', { style: { margin: '4px 0 0', color: '#94a3b8', fontSize: '14px' } }, 'New experiences to try at least once')
-      ),
-      React.createElement(Btn, {
-        onClick: function() { setEditingItem(null); setShowModal(true); },
-        children: '+ Add Experience'
-      })
-    ),
-    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '24px' } },
-      React.createElement('div', { style: { background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', textAlign: 'center' } },
-        React.createElement('div', { style: { fontSize: '24px', fontWeight: 700, color: '#e2e8f0' } }, untried.length),
-        React.createElement('div', { style: { fontSize: '12px', color: '#94a3b8' } }, 'To Try')
-      ),
-      React.createElement('div', { style: { background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', textAlign: 'center' } },
-        React.createElement('div', { style: { fontSize: '24px', fontWeight: 700, color: '#4ade80' } }, completed.length),
-        React.createElement('div', { style: { fontSize: '12px', color: '#94a3b8' } }, 'Completed')
-      ),
-      React.createElement('div', { style: { background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', textAlign: 'center' } },
-        React.createElement('div', { style: { fontSize: '24px', fontWeight: 700, color: '#fbbf24' } }, fmtMoney(totalCost)),
-        React.createElement('div', { style: { fontSize: '12px', color: '#94a3b8' } }, 'Est. Total')
-      ),
-      React.createElement('div', { style: { background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', textAlign: 'center' } },
-        React.createElement('div', { style: { fontSize: '24px', fontWeight: 700, color: '#38bdf8' } }, tryList.length > 0 ? Math.round((completed.length / tryList.length) * 100) + '%' : '0%'),
-        React.createElement('div', { style: { fontSize: '12px', color: '#94a3b8' } }, 'Explored')
-      )
-    ),
-    React.createElement('div', { style: { display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap', alignItems: 'center' } },
-      React.createElement(Input, {
-        value: search,
-        onChange: setSearch,
-        placeholder: 'Search experiences...',
-        style: { flex: '1 1 200px', minWidth: '150px' }
-      }),
-      React.createElement(Select, {
-        value: filterCat,
-        onChange: setFilterCat,
-        options: [{ value: '', label: 'All Categories' }].concat(CATEGORIES.map(function(c) { return { value: c.value, label: c.emoji + ' ' + c.label }; })),
-        style: { flex: '1 1 180px', minWidth: '150px' }
-      })
-    ),
-    untried.length === 0 && completed.length === 0 ?
-      React.createElement('div', { style: { textAlign: 'center', padding: '60px 20px', color: '#64748b' } },
-        React.createElement('div', { style: { fontSize: '48px', marginBottom: '12px' } }, '🌍'),
-        React.createElement('h3', { style: { margin: '0 0 8px', color: '#94a3b8' } }, 'No experiences yet'),
-        React.createElement('p', { style: { margin: 0, fontSize: '14px' } }, 'Add your first new experience to try!')
-      )
-      : null,
-    untried.length > 0 ?
-      React.createElement('div', null,
-        React.createElement('h2', { style: { fontSize: '18px', fontWeight: 600, color: '#e2e8f0', marginBottom: '12px' } }, '🎯 To Try (' + untried.length + ')'),
-        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px', marginBottom: '32px' } },
-          untried.map(function(item) {
-            return React.createElement('div', {
-              key: item.id,
-              style: { background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '20px', border: '1px solid rgba(255,255,255,0.08)', transition: 'transform 0.15s, box-shadow 0.15s', cursor: 'default' },
-              onMouseEnter: function(e) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)'; },
-              onMouseLeave: function(e) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }
-            },
-              React.createElement('div', { style: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' } },
-                React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '10px' } },
-                  React.createElement('span', { style: { fontSize: '28px' } }, getCategoryEmoji(item.category)),
-                  React.createElement('div', null,
-                    React.createElement('div', { style: { fontSize: '16px', fontWeight: 600, color: '#e2e8f0' } }, item.name),
-                    React.createElement('span', { style: { display: 'inline-block', fontSize: '11px', padding: '2px 8px', borderRadius: '10px', background: 'rgba(99,102,241,0.2)', color: '#a5b4fc', marginTop: '4px' } }, getCategoryLabel(item.category))
-                  )
-                ),
-                React.createElement('div', { style: { display: 'flex', gap: '4px' } },
-                  React.createElement('button', {
-                    onClick: function() { deleteItem(item.id); },
-                    style: { background: 'rgba(239,68,68,0.15)', border: 'none', color: '#f87171', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontSize: '12px' },
-                    title: 'Delete'
-                  }, Icons.trash)
-                )
-              ),
-              item.notes ?
-                React.createElement('p', { style: { margin: '0 0 10px', fontSize: '13px', color: '#94a3b8', lineHeight: 1.5 } }, item.notes)
-                : null,
-              React.createElement('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
-                React.createElement('span', { style: { fontSize: '14px', color: '#fbbf24', fontWeight: 500 } }, item.cost > 0 ? fmtMoney(item.cost) : 'Free'),
-                React.createElement(Btn, {
-                  onClick: function() { markTried(item.id); },
-                  variant: 'success',
-                  children: '🎉 Tried it!'
-                })
-              )
-            );
-          })
-        )
-      )
-      : null,
-    completed.length > 0 ?
-      React.createElement('div', null,
-        React.createElement('button', {
-          onClick: function() { setShowCompleted(!showCompleted); },
-          style: { background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', padding: '0', marginBottom: '12px', fontWeight: 600 }
-        },
-          React.createElement('span', { style: { transition: 'transform 0.2s', display: 'inline-block', transform: showCompleted ? 'rotate(90deg)' : 'rotate(0deg)' } }, '▶'),
-          'Experienced (' + completed.length + ')'
-        ),
-        showCompleted ?
-          React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '10px' } },
-            completed.map(function(item) {
-              return React.createElement('div', {
-                key: item.id,
-                style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.05)' }
-              },
-                React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 } },
-                  React.createElement('span', { style: { fontSize: '20px', flexShrink: 0 } }, getCategoryEmoji(item.category)),
-                  React.createElement('div', { style: { flex: 1, minWidth: 0 } },
-                    React.createElement('span', { style: { fontSize: '14px', color: '#64748b', textDecoration: 'line-through' } }, item.name),
-                    item.triedAt ?
-                      React.createElement('span', { style: { fontSize: '11px', color: '#475569', marginLeft: '8px' } }, '✓ ' + fmt(item.triedAt))
-                      : null
-                  )
-                ),
-                React.createElement('button', {
-                  onClick: function() { deleteItem(item.id); },
-                  style: { background: 'rgba(239,68,68,0.1)', border: 'none', color: '#f87171', borderRadius: '4px', padding: '2px 6px', cursor: 'pointer', fontSize: '11px', flexShrink: 0 },
-                  title: 'Delete'
-                }, Icons.trash)
-              );
-            })
-          )
-          : null
-      )
-      : null,
-    showModal ?
-      React.createElement(Modal, {
-        onClose: function() { setShowModal(false); },
-        title: editingItem ? 'Edit Experience' : 'Add New Experience'
-      },
-        React.createElement(TryListForm, {
-          initialData: editingItem,
-          onSave: function(item) {
-            if (editingItem) {
-              setData(function(prev) {
-                return Object.assign({}, prev, {
-                  tryList: (prev.tryList || []).map(function(i) { return i.id === editingItem.id ? Object.assign({}, i, item) : i; })
+  return html`
+    <div>
+      <div style=${{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <h1 style=${{ margin: 0, fontSize: '28px', fontWeight: 700, color: '#e2e8f0' }}>✨ Try List</h1>
+          <p style=${{ margin: '4px 0 0', color: '#94a3b8', fontSize: '14px' }}>New experiences to try at least once</p>
+        </div>
+        <${Btn} onClick=${function() { setEditingItem(null); setShowModal(true); }}>+ Add Experience<//>
+      </div>
+      <div style=${{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '24px' }}>
+        <div style=${{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+          <div style=${{ fontSize: '24px', fontWeight: 700, color: '#e2e8f0' }}>${untried.length}</div>
+          <div style=${{ fontSize: '12px', color: '#94a3b8' }}>To Try</div>
+        </div>
+        <div style=${{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+          <div style=${{ fontSize: '24px', fontWeight: 700, color: '#4ade80' }}>${completed.length}</div>
+          <div style=${{ fontSize: '12px', color: '#94a3b8' }}>Completed</div>
+        </div>
+        <div style=${{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+          <div style=${{ fontSize: '24px', fontWeight: 700, color: '#fbbf24' }}>${fmtMoney(totalCost)}</div>
+          <div style=${{ fontSize: '12px', color: '#94a3b8' }}>Est. Total</div>
+        </div>
+        <div style=${{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+          <div style=${{ fontSize: '24px', fontWeight: 700, color: '#38bdf8' }}>${tryList.length > 0 ? Math.round((completed.length / tryList.length) * 100) + '%' : '0%'}</div>
+          <div style=${{ fontSize: '12px', color: '#94a3b8' }}>Explored</div>
+        </div>
+      </div>
+      <div style=${{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <${Input} value=${search} onChange=${setSearch} placeholder="Search experiences..." style=${{ flex: '1 1 200px', minWidth: '150px' }} />
+        <${Select} value=${filterCat} onChange=${setFilterCat} options=${[{ value: '', label: 'All Categories' }].concat(CATEGORIES.map(function(c) { return { value: c.value, label: c.emoji + ' ' + c.label }; }))} style=${{ flex: '1 1 180px', minWidth: '150px' }} />
+      </div>
+      ${untried.length === 0 && completed.length === 0 && html`
+        <div style=${{ textAlign: 'center', padding: '60px 20px', color: '#64748b' }}>
+          <div style=${{ fontSize: '48px', marginBottom: '12px' }}>🌍</div>
+          <h3 style=${{ margin: '0 0 8px', color: '#94a3b8' }}>No experiences yet</h3>
+          <p style=${{ margin: 0, fontSize: '14px' }}>Add your first new experience to try!</p>
+        </div>
+      `}
+      ${untried.length > 0 && html`
+        <div>
+          <h2 style=${{ fontSize: '18px', fontWeight: 600, color: '#e2e8f0', marginBottom: '12px' }}>🎯 To Try (${untried.length})</h2>
+          <div style=${{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+            ${untried.map(function(item) {
+              return html`
+                <div key=${item.id} style=${{ background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '20px', border: '1px solid rgba(255,255,255,0.08)', transition: 'transform 0.15s, box-shadow 0.15s', cursor: 'default' }} onMouseEnter=${function(e) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)'; }} onMouseLeave=${function(e) { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}>
+                  <div style=${{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <div style=${{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style=${{ fontSize: '28px' }}>${getCategoryEmoji(item.category)}</span>
+                      <div>
+                        <div style=${{ fontSize: '16px', fontWeight: 600, color: '#e2e8f0' }}>${item.name}</div>
+                        <span style=${{ display: 'inline-block', fontSize: '11px', padding: '2px 8px', borderRadius: '10px', background: 'rgba(99,102,241,0.2)', color: '#a5b4fc', marginTop: '4px' }}>${getCategoryLabel(item.category)}</span>
+                      </div>
+                    </div>
+                    <div style=${{ display: 'flex', gap: '4px' }}>
+                      <button onClick=${function() { deleteItem(item.id); }} style=${{ background: 'rgba(239,68,68,0.15)', border: 'none', color: '#f87171', borderRadius: '6px', padding: '4px 8px', cursor: 'pointer', fontSize: '12px' }} title="Delete">${Icons.trash}</button>
+                    </div>
+                  </div>
+                  ${item.notes && html`<p style=${{ margin: '0 0 10px', fontSize: '13px', color: '#94a3b8', lineHeight: 1.5 }}>${item.notes}</p>`}
+                  <div style=${{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style=${{ fontSize: '14px', color: '#fbbf24', fontWeight: 500 }}>${item.cost > 0 ? fmtMoney(item.cost) : 'Free'}</span>
+                    <${Btn} onClick=${function() { markTried(item.id); }} color="emerald">🎉 Tried it!<//>
+                  </div>
+                </div>
+              `;
+            })}
+          </div>
+        </div>
+      `}
+      ${completed.length > 0 && html`
+        <div>
+          <button onClick=${function() { setShowCompleted(!showCompleted); }} style=${{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', padding: '0', marginBottom: '12px', fontWeight: 600 }}>
+            <span style=${{ transition: 'transform 0.2s', display: 'inline-block', transform: showCompleted ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
+            Experienced (${completed.length})
+          </button>
+          ${showCompleted && html`
+            <div style=${{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '10px' }}>
+              ${completed.map(function(item) {
+                return html`
+                  <div key=${item.id} style=${{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style=${{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1, minWidth: 0 }}>
+                      <span style=${{ fontSize: '20px', flexShrink: 0 }}>${getCategoryEmoji(item.category)}</span>
+                      <div style=${{ flex: 1, minWidth: 0 }}>
+                        <span style=${{ fontSize: '14px', color: '#64748b', textDecoration: 'line-through' }}>${item.name}</span>
+                        ${item.triedAt && html`<span style=${{ fontSize: '11px', color: '#475569', marginLeft: '8px' }}>✓ ${fmt(item.triedAt)}</span>`}
+                      </div>
+                    </div>
+                    <button onClick=${function() { deleteItem(item.id); }} style=${{ background: 'rgba(239,68,68,0.1)', border: 'none', color: '#f87171', borderRadius: '4px', padding: '2px 6px', cursor: 'pointer', fontSize: '11px', flexShrink: 0 }} title="Delete">${Icons.trash}</button>
+                  </div>
+                `;
+              })}
+            </div>
+          `}
+        </div>
+      `}
+      ${showModal && html`
+        <${Modal} onClose=${function() { setShowModal(false); }} title=${editingItem ? 'Edit Experience' : 'Add New Experience'}>
+          <${TryListForm}
+            initialData=${editingItem}
+            onSave=${function(item) {
+              if (editingItem) {
+                setData(function(prev) {
+                  return Object.assign({}, prev, {
+                    tryList: (prev.tryList || []).map(function(i) { return i.id === editingItem.id ? Object.assign({}, i, item) : i; })
+                  });
                 });
-              });
-            } else {
-              addItem(item);
-            }
-            setShowModal(false);
-            setEditingItem(null);
-          },
-          onCancel: function() { setShowModal(false); setEditingItem(null); }
-        })
-      )
-      : null
-  );
+              } else {
+                addItem(item);
+              }
+              setShowModal(false);
+              setEditingItem(null);
+            }}
+            onCancel=${function() { setShowModal(false); setEditingItem(null); }}
+          />
+        <//>
+      `}
+    </div>
+  `;
 }
 
 function TryListForm({ initialData, onSave, onCancel }) {
@@ -268,41 +231,18 @@ function TryListForm({ initialData, onSave, onCancel }) {
     onSave({ name: name.trim(), category: category, cost: cost, notes: notes });
   }
 
-  return React.createElement('form', { onSubmit: handleSubmit, style: { display: 'flex', flexDirection: 'column', gap: '16px' } },
-    React.createElement(Input, {
-      label: 'Experience Name',
-      value: name,
-      onChange: setName,
-      placeholder: 'e.g., Try rock climbing',
-      required: true
-    }),
-    React.createElement(Select, {
-      label: 'Category',
-      value: category,
-      onChange: setCategory,
-      options: CATEGORIES.map(function(c) { return { value: c.value, label: c.emoji + ' ' + c.label }; })
-    }),
-    React.createElement(Input, {
-      label: 'Estimated Cost',
-      type: 'number',
-      value: cost,
-      onChange: setCost,
-      placeholder: '0',
-      min: '0',
-      step: '0.01'
-    }),
-    React.createElement(Textarea, {
-      label: 'Notes',
-      value: notes,
-      onChange: setNotes,
-      placeholder: 'Any details, links, or ideas...',
-      rows: 3
-    }),
-    React.createElement('div', { style: { display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '8px' } },
-      React.createElement(Btn, { type: 'button', onClick: onCancel, variant: 'secondary', children: 'Cancel' }),
-      React.createElement(Btn, { type: 'submit', variant: 'primary', children: initialData ? 'Save Changes' : 'Add Experience' })
-    )
-  );
+  return html`
+    <form onSubmit=${handleSubmit} style=${{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <${Input} label="Experience Name" value=${name} onChange=${setName} placeholder="e.g., Try rock climbing" required />
+      <${Select} label="Category" value=${category} onChange=${setCategory} options=${CATEGORIES.map(function(c) { return { value: c.value, label: c.emoji + ' ' + c.label }; })} />
+      <${Input} label="Estimated Cost" type="number" value=${cost} onChange=${setCost} placeholder="0" min="0" step="0.01" />
+      <${Textarea} label="Notes" value=${notes} onChange=${setNotes} placeholder="Any details, links, or ideas..." rows="3" />
+      <div style=${{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '8px' }}>
+        <${Btn} type="button" onClick=${onCancel} color="ghost">Cancel<//>
+        <${Btn} type="submit" color="accent">${initialData ? 'Save Changes' : 'Add Experience'}<//>
+      </div>
+    </form>
+  `;
 }
 
 function App() {
@@ -313,13 +253,7 @@ function App() {
   var toast = _b[0];
   var setToast = _b[1];
   React.useEffect(function() { saveData(data); }, [data]);
-  return React.createElement(AppLayout, {
-    currentPage: 'trylist',
-    data: data,
-    toast: toast,
-    setToast: setToast,
-    pageContent: React.createElement(TryListPage, { data: data, setData: setData })
-  });
+  return html`<${AppLayout} currentPage="trylist" data=${data} toast=${toast} setToast=${setToast} pageContent=${html`<${TryListPage} data=${data} setData=${setData} />`} />`;
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);

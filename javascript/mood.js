@@ -46,72 +46,84 @@ function MoodPage({ data, setData }) {
 
   var last30 = getLast30Days();
 
-  return React.createElement('div', { className: 'p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto' },
-    React.createElement('div', { className: 'flex items-center gap-3 mb-8' },
-      React.createElement('div', {
-        className: 'w-10 h-10 rounded-xl flex items-center justify-center',
-        style: { background: 'rgba(251,191,36,0.15)' },
-        dangerouslySetInnerHTML: { __html: Icons.mood }
-      }),
-      React.createElement('h1', { className: 'text-2xl font-bold text-white' }, 'Mood Tracker')
-    ),
+  return html`
+    <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
+      <div className="flex items-center gap-3 mb-8">
+        <div
+          className="w-10 h-10 rounded-xl flex items-center justify-center"
+          style=${{ background: 'rgba(251,191,36,0.15)' }}
+        >
+          ${Icons.mood}
+        </div>
+        <h1 className="text-2xl font-bold text-white">Mood Tracker</h1>
+      </div>
 
-    React.createElement('div', { className: 'mb-10' },
-      React.createElement('h2', { className: 'text-lg font-semibold text-white mb-4' }, "How are you feeling today?"),
-      React.createElement('div', { className: 'grid grid-cols-5 gap-3' },
-        moods.map(function(m) {
-          var isSelected = todaysMood === m.val;
-          return React.createElement('button', {
-            key: m.val,
-            onClick: function() { logMood(m.val); },
-            className: 'flex flex-col items-center gap-2 py-4 px-2 rounded-xl transition-all duration-200 cursor-pointer',
-            style: {
-              background: isSelected ? m.color + '30' : 'rgba(255,255,255,0.05)',
-              border: isSelected ? '2px solid ' + m.color : '2px solid transparent',
-              transform: isSelected ? 'scale(1.08)' : 'scale(1)',
-              boxShadow: isSelected ? '0 0 20px ' + m.color + '40' : 'none'
-            }
-          },
-            React.createElement('span', { className: 'text-3xl sm:text-4xl', style: { filter: isSelected ? 'none' : 'saturate(0.6)' } }, m.emoji),
-            React.createElement('span', {
-              className: 'text-xs sm:text-sm font-medium',
-              style: { color: isSelected ? m.color : '#9ca3af' }
-            }, m.label)
-          );
-        })
-      )
-    ),
+      <div className="mb-10">
+        <h2 className="text-lg font-semibold text-white mb-4">How are you feeling today?</h2>
+        <div className="grid grid-cols-5 gap-3">
+          ${moods.map(function(m) {
+            var isSelected = todaysMood === m.val;
+            return html`
+              <button
+                key=${m.val}
+                onClick=${function() { logMood(m.val); }}
+                className="flex flex-col items-center gap-2 py-4 px-2 rounded-xl transition-all duration-200 cursor-pointer"
+                style=${{
+                  background: isSelected ? m.color + '30' : 'rgba(255,255,255,0.05)',
+                  border: isSelected ? '2px solid ' + m.color : '2px solid transparent',
+                  transform: isSelected ? 'scale(1.08)' : 'scale(1)',
+                  boxShadow: isSelected ? '0 0 20px ' + m.color + '40' : 'none'
+                }}
+              >
+                <span className="text-3xl sm:text-4xl" style=${{ filter: isSelected ? 'none' : 'saturate(0.6)' }}>${m.emoji}</span>
+                <span
+                  className="text-xs sm:text-sm font-medium"
+                  style=${{ color: isSelected ? m.color : '#9ca3af' }}
+                >${m.label}</span>
+              </button>
+            `;
+          })}
+        </div>
+      </div>
 
-    React.createElement('div', null,
-      React.createElement('h2', { className: 'text-lg font-semibold text-white mb-4' }, 'Last 30 Days'),
-      React.createElement('div', { className: 'grid grid-cols-10 gap-2' },
-        last30.map(function(day) {
-          var bg = day.moodVal ? getMoodColor(day.moodVal) + '30' : 'rgba(255,255,255,0.05)';
-          var emoji = day.moodVal ? getMoodEmoji(day.moodVal) : null;
-          var title = day.display + (day.moodVal ? ' - ' + day.moodVal.charAt(0).toUpperCase() + day.moodVal.slice(1) : ' - No mood');
-          return React.createElement('div', {
-            key: day.key,
-            title: title,
-            className: 'aspect-square rounded-lg flex items-center justify-center text-xs font-medium cursor-default transition-transform hover:scale-110',
-            style: { background: bg }
-          },
-            emoji ? React.createElement('span', { className: 'text-sm sm:text-base' }, emoji) :
-              React.createElement('span', { style: { width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'block' } })
-          );
-        })
-      )
-    )
-  );
+      <div>
+        <h2 className="text-lg font-semibold text-white mb-4">Last 30 Days</h2>
+        <div className="grid grid-cols-10 gap-2">
+          ${last30.map(function(day) {
+            var bg = day.moodVal ? getMoodColor(day.moodVal) + '30' : 'rgba(255,255,255,0.05)';
+            var emoji = day.moodVal ? getMoodEmoji(day.moodVal) : null;
+            var title = day.display + (day.moodVal ? ' - ' + day.moodVal.charAt(0).toUpperCase() + day.moodVal.slice(1) : ' - No mood');
+            return html`
+              <div
+                key=${day.key}
+                title=${title}
+                className="aspect-square rounded-lg flex items-center justify-center text-xs font-medium cursor-default transition-transform hover:scale-110"
+                style=${{ background: bg }}
+              >
+                ${emoji ? html`<span className="text-sm sm:text-base">${emoji}</span>` :
+                  html`<span style=${{ width: 6, height: 6, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'block' }} />`}
+              </div>
+            `;
+          })}
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function App() {
   var [data, setData] = React.useState(loadData);
   var [toast, setToast] = React.useState(null);
   React.useEffect(function() { saveData(data); }, [data]);
-  return React.createElement(AppLayout, {
-    currentPage: 'mood', data: data, toast: toast, setToast: setToast,
-    pageContent: React.createElement(MoodPage, { data: data, setData: setData })
-  });
+  return html`
+    <${AppLayout}
+      currentPage="mood"
+      data=${data}
+      toast=${toast}
+      setToast=${setToast}
+      pageContent=${html`<${MoodPage} data=${data} setData=${setData} />`}
+    />
+  `;
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
