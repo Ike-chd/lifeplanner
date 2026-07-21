@@ -213,6 +213,6 @@ function App() {
   var [data, setData] = React.useState(loadData);
   var [toast, setToast] = React.useState(null);
   React.useEffect(function() { saveData(data); }, [data]);
-  return html`<${AppLayout} currentPage="quests" data=${data} toast=${toast} setToast=${setToast} pageContent=${html`<${SideQuestsPage} data=${data} setData=${setData} />`} />`;
+  return html`<${AppLayout} currentPage="side-quests" data=${data} toast=${toast} setToast=${setToast} pageContent=${html`<${SideQuestsPage} data=${data} setData=${setData} />`} />`;
 }
 ReactDOM.createRoot(document.getElementById('root')).render(html`<${App} />`);
