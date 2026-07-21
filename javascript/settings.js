@@ -41,7 +41,7 @@ function SettingsPage({ data, setData }) {
           className="w-10 h-10 rounded-xl flex items-center justify-center"
           style=${{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
         >
-          <${Icons.settings} />
+          ${Icons.settings}
         </div>
         <h1 className="text-2xl font-bold">Settings</h1>
       </div>
