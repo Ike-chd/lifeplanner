@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Life OS — Vacations</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/htm"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    tailwind.config = { darkMode:'class', theme:{ extend:{ fontFamily:{ sans:['Inter','sans-serif'] }, colors:{ dark:{ 50:'#f8fafc',100:'#e2e8f0',200:'#cbd5e1',300:'#94a3b8',400:'#64748b',500:'#475569',600:'#334155',700:'#1e293b',800:'#0f172a',900:'#020617' }, accent:{ DEFAULT:'#818cf8', light:'#a5b4fc', dark:'#6366f1' }, emerald:{ DEFAULT:'#34d399', light:'#6ee7b7' }, amber:{ DEFAULT:'#fbbf24', light:'#fcd34d' }, rose:{ DEFAULT:'#fb7185', light:'#fda4af' } } } } }
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="javascript/store.js"></script>
+  <script src="javascript/shared.js"></script>
+  <script src="javascript/vacations.js"></script>
+</body>
+</html>
